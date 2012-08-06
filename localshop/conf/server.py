@@ -148,6 +148,7 @@ INSTALLED_APPS = [
     'localshop.apps.permissions',
 ]
 
+
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
 # the site admins on every HTTP 500 error when DEBUG=False.
@@ -157,14 +158,14 @@ LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'root': {
-        'handlers':['console'],
+        'handlers': ['console'],
         'propagate': True,
-        'level':'DEBUG',
+        'level': 'DEBUG',
     },
     'handlers': {
-        'console':{
-            'level':'INFO',
-            'class':'logging.StreamHandler'
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler'
         },
     },
     'formatters': {
@@ -173,4 +174,3 @@ LOGGING = {
         },
     },
 }
-

@@ -42,6 +42,12 @@ for dir in [MEDIA_ROOT, LOCALSHOP_RUN_DIR, LOCALSHOP_LOG_DIR]:
 LOCALSHOP_WEB_HOST = '0.0.0.0'
 LOCALSHOP_WEB_PORT = 8900
 
+# Comment out the following lines to enable the optional credential system
+# AUTHENTICATION_BACKENDS = [
+#     'django.contrib.auth.backends.ModelBackend',
+#     'localshop.apps.permissions.backend.CredentialBackend',
+# ]
+
     """
     return CONFIG_TEMPLATE
 
