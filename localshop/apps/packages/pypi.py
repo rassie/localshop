@@ -1,6 +1,7 @@
 import datetime
 import logging
 import xmlrpclib
+import urllib2
 
 from localshop.apps.packages import forms
 from localshop.apps.packages import models
@@ -8,6 +9,18 @@ from localshop.apps.packages import models
 
 logger = logging.getLogger(__name__)
 
+class Urllib2Transport(xmlrpclib.Transport):
+    def __init__(self, opener=None, https=False, use_datetime=0):
+        xmlrpclib.Transport.__init__(self, use_datetime)
+        self.https = https
+    
+    def request(self, host, handler, request_body, verbose=0):
+        proto = ('http', 'https')[bool(self.https)]
+        req = urllib2.Request('%s://%s%s' % (proto, host, handler), request_body)
+        req.add_header('User-agent', self.user_agent)
+        req.add_header("Content-Type", "text/xml")
+        self.verbose = verbose
+        return self.parse_response(urllib2.urlopen(req))
 
 def get_package_data(name, package=None):
     """Retrieve metadata information for the given package name"""
@@ -17,7 +30,7 @@ def get_package_data(name, package=None):
     else:
         releases = package.get_all_releases()
 
-    client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi')
+    client = xmlrpclib.ServerProxy('http://pypi.python.org/pypi', transport=Urllib2Transport())
 
     versions = client.package_releases(package.name, True)
 
