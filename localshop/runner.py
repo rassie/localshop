@@ -8,6 +8,7 @@ def generate_settings():
     settings file.
     """
     CONFIG_TEMPLATE = """
+import os
 import os.path
 
 from localshop.conf.server import *
@@ -30,6 +31,13 @@ DATABASES = {
 
 # Where the packages are stored
 MEDIA_ROOT = os.path.join(ROOT, 'files')
+
+LOCALSHOP_RUN_DIR = os.path.join(ROOT, 'run')
+LOCALSHOP_LOG_DIR = os.path.join(ROOT, 'log')
+
+for dir in [MEDIA_ROOT, LOCALSHOP_RUN_DIR, LOCALSHOP_LOG_DIR]:
+    if not os.path.exists(dir):
+         os.makedirs(dir)
 
 LOCALSHOP_WEB_HOST = '0.0.0.0'
 LOCALSHOP_WEB_PORT = 8900
