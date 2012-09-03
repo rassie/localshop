@@ -91,7 +91,7 @@ class SimpleDetail(DetailView):
             # Perhaps this version is new, refresh data
             if releases.count() == 0:
                 tasks.get_package_data.delay(name=slug, package=package)
-                return redirect("%s/simple/%s/%s/" % (settings.PYPI_MIRROR, slug, version))
+                return redirect("%s/simple/%s/%s" % (settings.PYPI_MIRROR, slug, version))
 
         self.object = package
         context = self.get_context_data(
