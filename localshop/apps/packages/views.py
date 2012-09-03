@@ -40,12 +40,12 @@ class SimpleIndex(ListView):
         return super(SimpleIndex, self).dispatch(request, *args, **kwargs)
 
     def post(self, request):
-        data, files = parse_distutils_request(request)
+        parse_distutils_request(request)
 
         # XXX: Auth is currently a bit of a hack
         method, identity = split_auth(request)
         if not method:
-            return HttpResponseUnauthorized('Missing auth header')
+            return HttpResponseUnauthorized(content='Missing auth header')
 
         username, password = decode_credentials(identity)
         user = authenticate(username=username, password=password)
@@ -57,10 +57,10 @@ class SimpleIndex(ListView):
             'file_upload': handle_register_or_upload,
         }
 
-        handler = actions.get(data.get(':action'))
+        handler = actions.get(request.POST.get(':action'))
         if not handler:
             raise Http404('Unknown action')
-        return handler(data, files, user)
+        return handler(request.POST, request.FILES, user)
 
 
 @validate_client
@@ -79,6 +79,9 @@ class SimpleDetail(DetailView):
             package = models.Package.objects.get(name__iexact=slug)
         except ObjectDoesNotExist:
             package = get_package_data(slug)
+
+        if package is None:
+            raise Http404
 
         releases = package.releases
         if version:

@@ -1,4 +1,5 @@
 from logan.runner import run_app
+from django.utils.crypto import get_random_string
 
 
 def generate_settings():
@@ -31,6 +32,11 @@ DATABASES = {
 
 # Where the packages are stored
 MEDIA_ROOT = os.path.join(ROOT, 'files')
+# *DON'T set MEDIA_URL since we don't want to serve those files directly
+# but only through a view to reduce the chance of a security breach
+
+STATIC_URL = '/assets/'
+STATIC_ROOT = os.path.join(ROOT, 'assets')
 
 LOCALSHOP_RUN_DIR = os.path.join(ROOT, 'run')
 LOCALSHOP_LOG_DIR = os.path.join(ROOT, 'log')
@@ -48,8 +54,12 @@ LOCALSHOP_WEB_PORT = 8900
 #     'localshop.apps.permissions.backend.CredentialBackend',
 # ]
 
+SECRET_KEY = '%(secret_key)s'
+
     """
-    return CONFIG_TEMPLATE
+    chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
+    values = {'secret_key': get_random_string(50, chars)}
+    return CONFIG_TEMPLATE % values
 
 
 def main():
