@@ -13,3 +13,5 @@ WEB_HOST = 'localhost'
 WEB_PORT = 8900
 
 DELETE_FILES = False
+
+PYPI_MIRROR = "http://pypi.python.org"

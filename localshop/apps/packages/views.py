@@ -11,12 +11,12 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic.detail import DetailView
 from django.views.generic.list import ListView
 
+from localshop.conf import settings
 from localshop.http import HttpResponseUnauthorized
 from localshop.views import LoginRequiredMixin, PermissionRequiredMixin
 from localshop.apps.packages import forms
 from localshop.apps.packages import models
 from localshop.apps.packages import tasks
-from localshop.apps.packages.pypi import get_package_data
 from localshop.apps.packages.utils import parse_distutils_request, validate_client
 from localshop.apps.permissions.utils import split_auth, decode_credentials
 
@@ -78,7 +78,8 @@ class SimpleDetail(DetailView):
         try:
             package = models.Package.objects.get(name__iexact=slug)
         except ObjectDoesNotExist:
-            package = get_package_data(slug)
+            tasks.get_package_data.delay(name=slug)
+            return redirect("%s/simple/%s/" % (settings.PYPI_MIRROR, slug))
 
         if package is None:
             raise Http404
@@ -89,7 +90,8 @@ class SimpleDetail(DetailView):
 
             # Perhaps this version is new, refresh data
             if releases.count() == 0:
-                get_package_data(slug, package)
+                tasks.get_package_data.delay(name=slug, package=package)
+                return redirect("%s/simple/%s/%s/" % (settings.PYPI_MIRROR, slug, version))
 
         self.object = package
         context = self.get_context_data(
@@ -129,7 +131,7 @@ def refresh(request, name):
         package = models.Package.objects.get(name__iexact=name)
     except ObjectDoesNotExist:
         package = None
-    package = get_package_data(name, package)
+    tasks.get_package_data.delay(name=name, package=package)
     return redirect(package)
 
 
