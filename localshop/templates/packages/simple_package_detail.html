@@ -19,10 +19,12 @@
 {% endfor %}
 
 {% for release in releases %}
+{% if release.files.all|length == 0 %}
     {% if release.home_page and release.home_page != 'UNKNOWN' %}
 <a href="{{ release.home_page }}" rel="homepage">{{ release.version }} home_page</a>
     {% endif %}
     {% if release.download_url and release.download_url != 'UNKNOWN'  %}
 <a href="{{ release.download_url }}" rel="download">{{ release.version }} download_url</a>
     {% endif %}
+{% endif %}
 {% endfor %}
